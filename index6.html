@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      text-align: center;
+      font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    }
+
+    input, button {
+      padding: 12px 20px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      align: center;
+    }
+
+    .error {
+      border: 2px solid red;
+    }
+
+    .error-message {
+      color: red;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <h1>Booking your place for your dinner!</h1>
+
+    <label for="name">Name:</label>
+    <input type="text" id="name" size="22" onblur="validateName()">
+    <div id="nameError" class="error-message"></div>
+
+    <label for="phone">Phone Number:</label>
+    <input type="text" id="phone" size="22" onblur="validatePhoneNumber()">
+    <div id="phoneError" class="error-message"></div><br>
+  </div>
+  <br>
+  <div>
+    <h2>Select a time</h2>
+    <input type="radio" id="first" name="seating" value="5" checked>
+    <label for="first">5:00</label><br>
+    <input type="radio" id="second" name="seating" value="6">
+    <label for="second">6:00</label><br>
+    <input type="radio" id="third" name="seating" value="7">
+    <label for="third">7:00</label><br>
+    <input type="radio" id="fourth" name="seating" value="8">
+    <label for="fourth">8:00</label><br>
+  </div>
+  <br>
+  <div>
+    <h2>What would you like to have with us?</h2>
+    <input type="checkbox" id="starters" name="starters" value="Starters">
+    <label for="starters">Starters</label><br>
+    <input type="checkbox" id="main" name="main" value="Main Course">
+    <label for="main">Main Course</label><br>
+    <input type="checkbox" id="dessert" name="dessert" value="Dessert">
+    <label for="dessert">Dessert</label><br>
+    <input type="checkbox" id="drinks" name="drinks" value="Drinks">
+    <label for="drinks">Drinks</label><br>
+  </div>
+  <div id="errorContainer" class="error-message"></div>
+  <button onclick="submitReservation()" id="submit">Submit</button>
+
+  <script>
+    document.getElementById("first").checked = true;
+
+    function submitReservation() {
+      var nameInput = document.getElementById("name");
+      var phoneInput = document.getElementById("phone");
+      var selectedTime = document.querySelector('input[name="seating"]:checked');
+      var selectedOptions = document.querySelectorAll('input[type="checkbox"]:checked');
+
+      var nameValue = nameInput.value.trim();
+      var phoneValue = phoneInput.value.trim();
+      
+      var errors = [];
+
+      if (!validateName()) {
+        errors.push("Name is empty or incomplete.");
+      }
+
+      if (!validatePhoneNumber()) {
+        errors.push("Phone number is invalid.");
+      }
+
+      if (errors.length > 0) {
+        document.getElementById("errorContainer").innerHTML = "Error: " + errors.join(' ');
+        return;
+      }
+
+      var preferences = Array.from(selectedOptions).map(option => option.value);
+
+      var reservationOutput = `Reservation for: ${nameValue} phone: (${phoneValue}) at ${selectedTime.value}:00 preferences: ${preferences.join(', ')}`;
+      window.alert(reservationOutput);
+    }
+
+    function validatePhoneNumber() {
+      var phoneInput = document.getElementById("phone");
+      var phoneError = document.getElementById("phoneError");
+      var phoneValue = phoneInput.value.trim();
+
+      if (phoneValue === "") {
+        setValidationError(phoneInput, phoneError, "Phone number is empty.");
+        return false;
+      } else if (!/^\d/.test(phoneValue)) {
+        setValidationError(phoneInput, phoneError, "Phone number must start with numbers.");
+        return false;
+      } else if (phoneValue.length !== 6) {
+        setValidationError(phoneInput, phoneError, "Phone number must have exactly 6 characters.");
+        return false;
+      } else {
+        clearValidationError(phoneInput, phoneError);
+        return true;
+      }
+    }
+
+    function validateName() {
+      var nameInput = document.getElementById("name");
+      var nameError = document.getElementById("nameError");
+      var nameValue = nameInput.value.trim();
+      
+      if (nameValue === "") {
+        setValidationError(nameInput, nameError, "Name is empty.");
+        return false;
+      } else if (!nameValue.includes(" ")) {
+        setValidationError(nameInput, nameError, "First and last names are required.");
+        return false;
+      } else {
+        clearValidationError(nameInput, nameError);
+        return true;
+      }
+    }
+
+    function setValidationError(inputElement, errorElement, message) {
+      inputElement.classList.add("error");
+      errorElement.textContent = `Error: ${message}`;
+    }
+
+    function clearValidationError(inputElement, errorElement) {
+      inputElement.classList.remove("error");
+      errorElement.textContent = "";
+    }
+  </script>
+</body>
+</html>
